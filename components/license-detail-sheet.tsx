@@ -8,7 +8,8 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle
+  SheetTitle,
+  SheetFooter
 } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { 
@@ -21,7 +22,10 @@ import {
   Shield,
   FileText,
   User,
-  Clock
+  Clock,
+  Cpu,
+  HardDrive,
+  FileStack
 } from "lucide-react"
 import { format } from "date-fns"
 import type { License } from "@/lib/types"
@@ -52,8 +56,8 @@ export function LicenseDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-2xl">
-        <SheetHeader className="pb-4">
+      <SheetContent className="w-full sm:max-w-2xl flex flex-col h-full">
+        <SheetHeader className="pb-4 flex-shrink-0">
           <div className="flex items-center gap-2">
             <SheetTitle>{license.ticket_id}</SheetTitle>
             {license.status === "Active" ? (
@@ -69,8 +73,8 @@ export function LicenseDetailSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="h-[calc(100vh-200px)] pr-4">
-          <div className="space-y-6">
+        <ScrollArea className="flex-1 pr-4 -mr-4">
+          <div className="space-y-6 pb-4">
             {/* Status & Assignment */}
             <div className="rounded-lg border p-4 bg-muted/50">
               <div className="grid grid-cols-2 gap-4">
@@ -185,6 +189,76 @@ export function LicenseDetailSheet({
               </dl>
             </div>
 
+            {/* Hardware Details */}
+            {(payload.mac_id || payload.motherboard_serial_no || payload.processor_id || payload.c_drive_serial_no) && (
+              <>
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                    <Cpu className="h-4 w-4" />
+                    Hardware Details
+                  </h3>
+                  <dl className="grid gap-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      {payload.mac_id && (
+                        <div>
+                          <dt className="text-xs text-muted-foreground">MAC ID</dt>
+                          <dd className="font-medium text-sm font-mono">{payload.mac_id}</dd>
+                        </div>
+                      )}
+                      {payload.motherboard_serial_no && (
+                        <div>
+                          <dt className="text-xs text-muted-foreground">Motherboard S/N</dt>
+                          <dd className="font-medium text-sm font-mono">{payload.motherboard_serial_no}</dd>
+                        </div>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {payload.processor_id && (
+                        <div>
+                          <dt className="text-xs text-muted-foreground">Processor ID</dt>
+                          <dd className="font-medium text-sm font-mono">{payload.processor_id}</dd>
+                        </div>
+                      )}
+                      {payload.c_drive_serial_no && (
+                        <div>
+                          <dt className="text-xs text-muted-foreground">C Drive S/N</dt>
+                          <dd className="font-medium text-sm font-mono">{payload.c_drive_serial_no}</dd>
+                        </div>
+                      )}
+                    </div>
+                  </dl>
+                </div>
+              </>
+            )}
+
+            {/* Document Metrics */}
+            {(payload.no_of_pages || payload.no_of_documents) && (
+              <>
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                    <FileStack className="h-4 w-4" />
+                    Document Metrics
+                  </h3>
+                  <dl className="grid grid-cols-2 gap-2">
+                    {payload.no_of_pages && (
+                      <div>
+                        <dt className="text-xs text-muted-foreground">No. of Pages</dt>
+                        <dd className="font-medium text-sm">{payload.no_of_pages}</dd>
+                      </div>
+                    )}
+                    {payload.no_of_documents && (
+                      <div>
+                        <dt className="text-xs text-muted-foreground">No. of Documents</dt>
+                        <dd className="font-medium text-sm">{payload.no_of_documents}</dd>
+                      </div>
+                    )}
+                  </dl>
+                </div>
+              </>
+            )}
+
             <Separator />
 
             {/* Validity & Contracts */}
@@ -294,29 +368,31 @@ export function LicenseDetailSheet({
           </div>
         </ScrollArea>
 
-        {/* Actions */}
-        <div className="flex gap-3 pt-4 border-t mt-4">
-          {canClaim && (
-            <Button onClick={() => onClaim(license)} className="flex-1">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Claim Ticket
-            </Button>
-          )}
-          {canActivate && (
-            <Button onClick={() => onActivate(license)} className="flex-1 bg-success hover:bg-success/90">
-              <CheckCircle2 className="mr-2 h-4 w-4" />
-              Mark Active & Share
-            </Button>
-          )}
-          {!canClaim && !canActivate && license.status === "Active" && (
-            <div className="flex-1 text-center py-2">
-              <Badge className="bg-success text-success-foreground">
-                <CheckCircle2 className="mr-1 h-3 w-3" />
-                License Active
-              </Badge>
-            </div>
-          )}
-        </div>
+        {/* Actions - Fixed at bottom */}
+        <SheetFooter className="flex-shrink-0 pt-4 border-t mt-auto">
+          <div className="flex gap-3 w-full">
+            {canClaim && (
+              <Button onClick={() => onClaim(license)} className="flex-1" size="lg">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Claim Ticket
+              </Button>
+            )}
+            {canActivate && (
+              <Button onClick={() => onActivate(license)} className="flex-1 bg-success hover:bg-success/90" size="lg">
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                Mark Active & Share
+              </Button>
+            )}
+            {!canClaim && !canActivate && license.status === "Active" && (
+              <div className="flex-1 text-center py-2">
+                <Badge className="bg-success text-success-foreground">
+                  <CheckCircle2 className="mr-1 h-3 w-3" />
+                  License Active
+                </Badge>
+              </div>
+            )}
+          </div>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   )

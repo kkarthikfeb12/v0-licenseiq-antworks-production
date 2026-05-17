@@ -63,6 +63,16 @@ export interface ApprovalPayload {
   license_type: string
   auth_method: string
   auth_value: string
+  
+  // Hardware/System Details
+  mac_id: string
+  motherboard_serial_no: string
+  processor_id: string
+  c_drive_serial_no: string
+  
+  // Document Metrics
+  no_of_pages: string
+  no_of_documents: string
 
   // Section 3 - Validity & Contracts
   contract_signed_date: string

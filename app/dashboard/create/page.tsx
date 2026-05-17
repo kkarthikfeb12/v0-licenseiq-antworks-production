@@ -34,6 +34,7 @@ import {
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import type { ApprovalPayload, CustomField } from "@/lib/types"
+import { sendEmail, generateCEOApprovalEmail, generateLicenseCreatedEmail } from "@/lib/email"
 import { toast } from "sonner"
 
 function CreateLicenseFormContent() {
@@ -63,6 +64,16 @@ function CreateLicenseFormContent() {
     license_type: "",
     auth_method: "",
     auth_value: "",
+    
+    // Hardware/System Details
+    mac_id: "",
+    motherboard_serial_no: "",
+    processor_id: "",
+    c_drive_serial_no: "",
+    
+    // Document Metrics
+    no_of_pages: "",
+    no_of_documents: "",
     
     // Section 3 - Validity & Contracts
     contract_signed_date: undefined as Date | undefined,
@@ -138,6 +149,12 @@ function CreateLicenseFormContent() {
         license_type: formData.license_type,
         auth_method: formData.auth_method,
         auth_value: formData.auth_value,
+        mac_id: formData.mac_id,
+        motherboard_serial_no: formData.motherboard_serial_no,
+        processor_id: formData.processor_id,
+        c_drive_serial_no: formData.c_drive_serial_no,
+        no_of_pages: formData.no_of_pages,
+        no_of_documents: formData.no_of_documents,
         contract_signed_date: formData.contract_signed_date?.toISOString() || "",
         contract_period: formData.contract_period,
         license_required_by: formData.license_required_by?.toISOString() || "",
@@ -156,6 +173,30 @@ function CreateLicenseFormContent() {
         amId: currentUser.id,
         amName: currentUser.name,
         approvalPayload
+      })
+
+      // Send emails
+      if (formData.routing === "ceo") {
+        // Send CEO approval email
+        const magicLink = `${window.location.origin}/ceo/approve/${license.id}?token=${license.magic_token}`
+        await sendEmail({
+          to: "ceo@antworks.com",
+          subject: `License Request Pending Approval - ${license.ticket_id}`,
+          html: generateCEOApprovalEmail(license, magicLink),
+          type: "CEO_SIGNOFF",
+          originalRecipient: "ceo@antworks.com",
+          recipientRole: "CEO"
+        })
+      }
+
+      // Send confirmation email to AM
+      await sendEmail({
+        to: currentUser.email,
+        subject: `License Request Created - ${license.ticket_id}`,
+        html: generateLicenseCreatedEmail(license),
+        type: "TICKET_CREATED",
+        originalRecipient: currentUser.email,
+        recipientRole: "Account Manager"
       })
 
       toast.success(
@@ -339,6 +380,90 @@ function CreateLicenseFormContent() {
                 value={formData.auth_value}
                 onChange={(e) => handleInputChange("auth_value", e.target.value)}
                 placeholder="Enter authentication value"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Section 2.1 - Hardware/System Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Section 2.1 - Hardware/System Details</CardTitle>
+            <CardDescription>System hardware identifiers for license binding</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="mac_id">MAC ID</Label>
+              <Input
+                id="mac_id"
+                value={formData.mac_id}
+                onChange={(e) => handleInputChange("mac_id", e.target.value)}
+                placeholder="e.g., 00:1A:2B:3C:4D:5E"
+                className="font-mono"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="motherboard_serial_no">Motherboard Serial No</Label>
+              <Input
+                id="motherboard_serial_no"
+                value={formData.motherboard_serial_no}
+                onChange={(e) => handleInputChange("motherboard_serial_no", e.target.value)}
+                placeholder="e.g., MB123456789"
+                className="font-mono"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="processor_id">Processor ID</Label>
+              <Input
+                id="processor_id"
+                value={formData.processor_id}
+                onChange={(e) => handleInputChange("processor_id", e.target.value)}
+                placeholder="e.g., BFEBFBFF000906EA"
+                className="font-mono"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="c_drive_serial_no">C Drive Serial No</Label>
+              <Input
+                id="c_drive_serial_no"
+                value={formData.c_drive_serial_no}
+                onChange={(e) => handleInputChange("c_drive_serial_no", e.target.value)}
+                placeholder="e.g., WD-WCAZ12345678"
+                className="font-mono"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Section 2.2 - Document Metrics */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Section 2.2 - Document Metrics</CardTitle>
+            <CardDescription>Document processing capacity limits</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="no_of_pages">No. of Pages</Label>
+              <Input
+                id="no_of_pages"
+                type="number"
+                value={formData.no_of_pages}
+                onChange={(e) => handleInputChange("no_of_pages", e.target.value)}
+                placeholder="e.g., 10000"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="no_of_documents">No. of Documents</Label>
+              <Input
+                id="no_of_documents"
+                type="number"
+                value={formData.no_of_documents}
+                onChange={(e) => handleInputChange("no_of_documents", e.target.value)}
+                placeholder="e.g., 5000"
               />
             </div>
           </CardContent>
