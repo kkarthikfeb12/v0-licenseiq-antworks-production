@@ -190,7 +190,7 @@ function MyLicensesContent() {
 
 export default function MyLicensesPage() {
   return (
-    <AuthGuard allowedRoles={["AM"]}>
+    <AuthGuard allowedRoles={["am"]}>
       <MyLicensesContent />
     </AuthGuard>
   )

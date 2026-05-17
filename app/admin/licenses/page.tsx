@@ -281,7 +281,7 @@ function AdminLicensesContent() {
 
 export default function AdminLicensesPage() {
   return (
-    <AuthGuard allowedRoles={["Admin"]}>
+    <AuthGuard allowedRoles={["admin"]}>
       <AdminLicensesContent />
     </AuthGuard>
   )

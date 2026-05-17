@@ -428,7 +428,7 @@ export default function AdminLicenseDetailPage({ params }: { params: Promise<{ i
   const resolvedParams = use(params)
   
   return (
-    <AuthGuard allowedRoles={["Admin"]}>
+    <AuthGuard allowedRoles={["admin"]}>
       <AdminLicenseDetailContent licenseId={resolvedParams.id} />
     </AuthGuard>
   )

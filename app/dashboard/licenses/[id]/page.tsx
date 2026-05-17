@@ -414,7 +414,7 @@ export default function LicenseDetailPage({ params }: { params: Promise<{ id: st
   const resolvedParams = use(params)
   
   return (
-    <AuthGuard allowedRoles={["AM", "Admin"]}>
+    <AuthGuard allowedRoles={["am", "admin"]}>
       <LicenseDetailContent licenseId={resolvedParams.id} />
     </AuthGuard>
   )

@@ -191,7 +191,7 @@ function CEODashboardContent() {
 
 export default function CEODashboardPage() {
   return (
-    <AuthGuard allowedRoles={["CEO"]}>
+    <AuthGuard allowedRoles={["ceo"]}>
       <CEODashboardContent />
     </AuthGuard>
   )

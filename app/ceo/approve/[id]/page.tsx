@@ -408,7 +408,7 @@ export default function CEOApprovalPage({ params }: { params: Promise<{ id: stri
   const resolvedParams = use(params)
   
   return (
-    <AuthGuard allowedRoles={["CEO"]}>
+    <AuthGuard allowedRoles={["ceo"]}>
       <CEOApprovalContent licenseId={resolvedParams.id} />
     </AuthGuard>
   )

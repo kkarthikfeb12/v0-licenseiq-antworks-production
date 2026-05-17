@@ -54,19 +54,19 @@ const navItems: NavItem[] = [
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
-    roles: ["AM"]
+    roles: ["am"]
   },
   {
     title: "My Licenses",
     href: "/dashboard/licenses",
     icon: FileText,
-    roles: ["AM"]
+    roles: ["am"]
   },
   {
     title: "Create Request",
     href: "/dashboard/create",
     icon: FileCheck,
-    roles: ["AM"]
+    roles: ["am"]
   },
   
   // License Team Navigation
@@ -74,13 +74,13 @@ const navItems: NavItem[] = [
     title: "Service Desk",
     href: "/license-team",
     icon: ClipboardList,
-    roles: ["LicenseTeam"]
+    roles: ["license_team"]
   },
   {
     title: "My Tickets",
     href: "/license-team/my-tickets",
     icon: FileText,
-    roles: ["LicenseTeam"]
+    roles: ["license_team"]
   },
   
   // CEO Navigation
@@ -88,7 +88,7 @@ const navItems: NavItem[] = [
     title: "Pending Approvals",
     href: "/ceo",
     icon: UserCheck,
-    roles: ["CEO"]
+    roles: ["ceo"]
   },
   
   // Admin Navigation
@@ -96,37 +96,37 @@ const navItems: NavItem[] = [
     title: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
-    roles: ["Admin"]
+    roles: ["admin"]
   },
   {
     title: "Licenses",
     href: "/admin/licenses",
     icon: FileText,
-    roles: ["Admin"]
+    roles: ["admin"]
   },
   {
     title: "Reports",
     href: "/admin/reports",
     icon: BarChart3,
-    roles: ["Admin"]
+    roles: ["admin"]
   },
   {
     title: "Users",
     href: "/admin/users",
     icon: Users,
-    roles: ["Admin"]
+    roles: ["admin"]
   },
   {
     title: "Audit Logs",
     href: "/admin/audit",
     icon: ClipboardList,
-    roles: ["Admin"]
+    roles: ["admin"]
   },
   {
     title: "Settings",
     href: "/admin/settings",
     icon: Settings,
-    roles: ["Admin"]
+    roles: ["admin"]
   }
 ]
 
@@ -157,13 +157,13 @@ export function AppSidebar() {
 
   const getRoleLabel = (role: UserRole) => {
     switch (role) {
-      case "Admin":
+      case "admin":
         return "Administrator"
-      case "AM":
+      case "am":
         return "Account Manager"
-      case "LicenseTeam":
+      case "license_team":
         return "License Team"
-      case "CEO":
+      case "ceo":
         return "CEO"
       default:
         return role
@@ -206,7 +206,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {currentUser.role === "AM" && currentUser.mapped_clients.length > 0 && (
+        {currentUser.role === "am" && currentUser.mapped_clients.length > 0 && (
           <>
             <SidebarSeparator />
             <SidebarGroup>

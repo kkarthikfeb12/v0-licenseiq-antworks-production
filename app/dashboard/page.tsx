@@ -235,7 +235,7 @@ function AMDashboardContent() {
 
 export default function AMDashboardPage() {
   return (
-    <AuthGuard allowedRoles={["AM"]}>
+    <AuthGuard allowedRoles={["am"]}>
       <AMDashboardContent />
     </AuthGuard>
   )

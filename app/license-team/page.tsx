@@ -302,7 +302,7 @@ function LicenseTeamDashboardContent() {
 
 export default function LicenseTeamDashboardPage() {
   return (
-    <AuthGuard allowedRoles={["LicenseTeam"]}>
+    <AuthGuard allowedRoles={["license_team"]}>
       <LicenseTeamDashboardContent />
     </AuthGuard>
   )

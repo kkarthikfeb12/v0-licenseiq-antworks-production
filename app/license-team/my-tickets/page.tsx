@@ -198,7 +198,7 @@ function MyTicketsContent() {
 
 export default function MyTicketsPage() {
   return (
-    <AuthGuard allowedRoles={["LicenseTeam"]}>
+    <AuthGuard allowedRoles={["license_team"]}>
       <MyTicketsContent />
     </AuthGuard>
   )

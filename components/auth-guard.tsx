@@ -28,16 +28,16 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
       if (allowedRoles && currentUser && !allowedRoles.includes(currentUser.role)) {
         // Redirect to appropriate dashboard based on role
         switch (currentUser.role) {
-          case "Admin":
+          case "admin":
             router.push("/admin")
             break
-          case "AM":
+          case "am":
             router.push("/dashboard")
             break
-          case "LicenseTeam":
+          case "license_team":
             router.push("/license-team")
             break
-          case "CEO":
+          case "ceo":
             router.push("/ceo")
             break
           default:

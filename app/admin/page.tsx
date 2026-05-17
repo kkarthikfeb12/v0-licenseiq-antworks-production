@@ -41,7 +41,7 @@ function AdminDashboardContent() {
   ).length
   const expiredLicenses = licenses.filter(l => l.status === "Expired").length
   const totalUsers = users.length
-  const activeAMs = users.filter(u => u.role === "AM" && !u.disabled).length
+  const activeAMs = users.filter(u => u.role === "am" && !u.disabled).length
 
   // Data for charts
   const statusData = [
@@ -267,7 +267,7 @@ function AdminDashboardContent() {
 
 export default function AdminDashboardPage() {
   return (
-    <AuthGuard allowedRoles={["Admin"]}>
+    <AuthGuard allowedRoles={["admin"]}>
       <AdminDashboardContent />
     </AuthGuard>
   )

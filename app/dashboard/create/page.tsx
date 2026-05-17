@@ -694,7 +694,7 @@ function CreateLicenseForm() {
 
 export default function CreateLicensePage() {
   return (
-    <AuthGuard allowedRoles={["AM"]}>
+    <AuthGuard allowedRoles={["am"]}>
       <CreateLicenseForm />
     </AuthGuard>
   )
