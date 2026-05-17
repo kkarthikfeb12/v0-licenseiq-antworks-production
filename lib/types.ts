@@ -1,5 +1,5 @@
 // User roles
-export type UserRole = "Admin" | "AM" | "LicenseTeam" | "CEO"
+export type UserRole = "admin" | "am" | "license_team" | "ceo"
 
 // License status
 export type LicenseStatus =
@@ -15,10 +15,12 @@ export interface User {
   name: string
   email: string
   role: UserRole
+  department?: string
   mapped_clients: string[]
   disabled: boolean
   last_login: string | null
   password?: string
+  createdAt: string
 }
 
 // License type

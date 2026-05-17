@@ -216,3 +216,23 @@ export const useDataStore = create<DataState>()(
     }
   )
 )
+
+// Convenience hook that combines both stores
+export const useStore = () => {
+  const auth = useAuthStore()
+  const data = useDataStore()
+  return {
+    ...auth,
+    ...data,
+    addUser: (user: Omit<User, "id" | "createdAt">) => {
+      return data.addUser({
+        ...user,
+        password: "password123",
+        createdAt: new Date().toISOString()
+      } as Omit<User, "id">)
+    },
+    deleteUser: (id: string) => {
+      data.updateUser(id, { disabled: true })
+    }
+  }
+}

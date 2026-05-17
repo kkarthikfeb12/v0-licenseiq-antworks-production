@@ -57,11 +57,13 @@ export const seedUsers: User[] = [
     id: "admin-1",
     name: "System Admin",
     email: "admin@antworks.com",
-    role: "Admin",
+    role: "admin",
+    department: "IT",
     mapped_clients: [],
     disabled: false,
     last_login: new Date().toISOString(),
-    password: "admin123"
+    password: "admin123",
+    createdAt: new Date().toISOString()
   },
   
   // CEO
@@ -69,11 +71,13 @@ export const seedUsers: User[] = [
     id: "ceo-1",
     name: "Asheesh Mehra",
     email: "ceo@antworks.com",
-    role: "CEO",
+    role: "ceo",
+    department: "Executive",
     mapped_clients: [],
     disabled: false,
     last_login: null,
-    password: "ceo123"
+    password: "ceo123",
+    createdAt: new Date().toISOString()
   },
   
   // Account Managers
@@ -81,81 +85,97 @@ export const seedUsers: User[] = [
     id: "am-1",
     name: "Abhishek",
     email: "abhishek@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["Mercer - Health", "USC"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "am-2",
     name: "Balaji G",
     email: "balaji@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["Mercer - Health"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "am-3",
     name: "Murtuza",
     email: "murtuza@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["US Bank"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "am-4",
     name: "Sumer",
     email: "sumer@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["Kotak", "CYPRESS", "GUUD", "Scoot PTE LTD"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "am-5",
     name: "Jason Moore",
     email: "jason@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["Marsh Asia Slips"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "am-6",
     name: "Ben",
     email: "ben@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["Marsh Asia Slips", "Marsh Policy Intake"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "am-7",
     name: "Shanmugapriya",
     email: "shanmugapriya@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["Fetch Insurance Services LLC"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "am-8",
     name: "Gokul",
     email: "gokul@antworks.com",
-    role: "AM",
+    role: "am",
+    department: "Sales",
     mapped_clients: ["American Type Culture Collection / ATCC"],
     disabled: false,
     last_login: null,
-    password: "am123"
+    password: "am123",
+    createdAt: new Date().toISOString()
   },
   
   // License Team
@@ -163,31 +183,37 @@ export const seedUsers: User[] = [
     id: "lt-1",
     name: "Puthiyaraj",
     email: "puthiyaraj@antworks.com",
-    role: "LicenseTeam",
+    role: "license_team",
+    department: "License Operations",
     mapped_clients: [],
     disabled: false,
     last_login: null,
-    password: "lt123"
+    password: "lt123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "lt-2",
     name: "Manish",
     email: "manish@antworks.com",
-    role: "LicenseTeam",
+    role: "license_team",
+    department: "License Operations",
     mapped_clients: [],
     disabled: false,
     last_login: null,
-    password: "lt123"
+    password: "lt123",
+    createdAt: new Date().toISOString()
   },
   {
     id: "lt-3",
     name: "Abhijith",
     email: "abhijith@antworks.com",
-    role: "LicenseTeam",
+    role: "license_team",
+    department: "License Operations",
     mapped_clients: [],
     disabled: false,
     last_login: null,
-    password: "lt123"
+    password: "lt123",
+    createdAt: new Date().toISOString()
   }
 ]
 
@@ -241,7 +267,7 @@ const rawLicenseData = [
 
 // Find AM user by name
 const findAmUser = (amName: string): User | undefined => {
-  return seedUsers.find(u => u.role === "AM" && u.name === amName)
+  return seedUsers.find(u => u.role === "am" && u.name === amName)
 }
 
 // Generate seed licenses from raw data
