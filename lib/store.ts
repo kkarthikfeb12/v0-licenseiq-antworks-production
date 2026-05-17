@@ -17,7 +17,17 @@ export const useAuthStore = create<AuthState>()(
       currentUser: null,
       isAuthenticated: false,
       login: async (email: string, password: string) => {
-        const user = seedUsers.find(u => u.email === email && u.password === password && !u.disabled)
+        // First check persisted users from data store, then fall back to seed data
+        const dataStoreUsers = useDataStore.getState().users
+        const allUsers = dataStoreUsers.length > 0 ? dataStoreUsers : seedUsers
+        
+        // Find user by email (case-insensitive) and password
+        const user = allUsers.find(u => 
+          u.email.toLowerCase() === email.toLowerCase() && 
+          u.password === password && 
+          !u.disabled
+        )
+        
         if (user) {
           const updatedUser = { ...user, last_login: new Date().toISOString() }
           set({ currentUser: updatedUser, isAuthenticated: true })
