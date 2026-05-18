@@ -12,8 +12,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Plus, Search, Edit, Trash2, Shield, User, Crown, Briefcase } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { Plus, Search, Edit, Trash2, Shield, User, Crown, Briefcase, Mail, Eye, EyeOff, KeyRound } from "lucide-react"
 import { UserRole } from "@/lib/types"
+import { sendEmail } from "@/lib/email"
+import { toast } from "sonner"
 
 export default function AdminUsersPage() {
   const { users, addUser, updateUser, deleteUser } = useStore()
@@ -27,7 +30,11 @@ export default function AdminUsersPage() {
     email: "",
     role: "am" as UserRole,
     department: "",
+    password: "",
+    sendWelcomeEmail: true,
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,18 +61,102 @@ export default function AdminUsersPage() {
     }
   }
 
-  const handleAddUser = () => {
-    addUser({
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
-      department: newUser.department,
-      disabled: false,
-      mapped_clients: [],
-      last_login: null,
-    })
-    setNewUser({ name: "", email: "", role: "am", department: "" })
-    setIsAddDialogOpen(false)
+  const handleAddUser = async () => {
+    if (!newUser.name || !newUser.email || !newUser.password) {
+      toast.error("Please fill in all required fields")
+      return
+    }
+
+    setIsSubmitting(true)
+    
+    try {
+      const createdUser = addUser({
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        department: newUser.department,
+        disabled: false,
+        mapped_clients: [],
+        last_login: null,
+        password: newUser.password,
+      })
+
+      // Send welcome email if enabled
+      if (newUser.sendWelcomeEmail) {
+        const welcomeHtml = generateWelcomeEmail(newUser.name, newUser.email, newUser.password, newUser.role)
+        await sendEmail({
+          to: newUser.email,
+          subject: "Welcome to LicenseIQ - Your Account Has Been Created",
+          html: welcomeHtml,
+          type: "WELCOME_EMAIL",
+          originalRecipient: newUser.email,
+          recipientRole: newUser.role,
+        })
+        toast.success(`User created and welcome email sent to ${newUser.email}`)
+      } else {
+        toast.success("User created successfully")
+      }
+
+      setNewUser({ name: "", email: "", role: "am", department: "", password: "", sendWelcomeEmail: true })
+      setIsAddDialogOpen(false)
+    } catch (error) {
+      toast.error("Failed to create user")
+      console.error(error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const generateWelcomeEmail = (name: string, email: string, password: string, role: UserRole): string => {
+    const roleLabel = role === "am" ? "Account Manager" : role === "license_team" ? "License Team" : role === "ceo" ? "CEO" : "Administrator"
+    const loginUrl = typeof window !== "undefined" ? `${window.location.origin}/login` : "/login"
+    
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
+          Welcome to LicenseIQ
+        </h2>
+        
+        <p style="color: #334155;">Hello ${name},</p>
+        
+        <p style="color: #334155;">
+          Your LicenseIQ account has been created successfully. You can now log in to access the system.
+        </p>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #334155; margin-top: 0;">Your Login Credentials</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; width: 40%;">Email:</td>
+              <td style="padding: 8px 0; font-weight: bold;">${email}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b;">Password:</td>
+              <td style="padding: 8px 0; font-weight: bold; font-family: monospace;">${password}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b;">Role:</td>
+              <td style="padding: 8px 0;">${roleLabel}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${loginUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Log In to LicenseIQ
+          </a>
+        </div>
+        
+        <p style="color: #dc2626; font-size: 14px; background: #fef2f2; padding: 12px; border-radius: 4px;">
+          <strong>Important:</strong> Please change your password after your first login for security purposes.
+        </p>
+        
+        <p style="color: #64748b; font-size: 12px; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+          This is an automated email from LicenseIQ - Antworks License Management System.<br/>
+          If you did not expect this email, please contact your administrator.
+        </p>
+      </div>
+    `
   }
 
   const handleDeleteUser = (userId: string) => {
@@ -99,11 +190,11 @@ export default function AdminUsersPage() {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Add New User</DialogTitle>
-                <DialogDescription>Create a new user account with specified role</DialogDescription>
+                <DialogDescription>Create a new user account with specified role and credentials</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">Full Name <span className="text-destructive">*</span></Label>
                   <Input
                     id="name"
                     value={newUser.name}
@@ -112,7 +203,7 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
                   <Input
                     id="email"
                     type="email"
@@ -120,6 +211,42 @@ export default function AdminUsersPage() {
                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                     placeholder="john@antworks.ai"
                   />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Password <span className="text-destructive">*</span></Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                      placeholder="Enter a secure password"
+                      className="pr-10"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-fit"
+                    onClick={() => {
+                      const generated = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-2).toUpperCase() + "!"
+                      setNewUser({ ...newUser, password: generated })
+                      setShowPassword(true)
+                    }}
+                  >
+                    <KeyRound className="mr-2 h-3 w-3" />
+                    Generate Password
+                  </Button>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="role">Role</Label>
@@ -144,10 +271,32 @@ export default function AdminUsersPage() {
                     placeholder="Sales"
                   />
                 </div>
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="sendWelcomeEmail" className="cursor-pointer">Send Welcome Email</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Send login credentials to the user via email
+                    </p>
+                  </div>
+                  <Switch
+                    id="sendWelcomeEmail"
+                    checked={newUser.sendWelcomeEmail}
+                    onCheckedChange={(checked) => setNewUser({ ...newUser, sendWelcomeEmail: checked })}
+                  />
+                </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleAddUser}>Add User</Button>
+                <Button onClick={handleAddUser} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>Creating...</>
+                  ) : (
+                    <>
+                      {newUser.sendWelcomeEmail && <Mail className="mr-2 h-4 w-4" />}
+                      Add User
+                    </>
+                  )}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

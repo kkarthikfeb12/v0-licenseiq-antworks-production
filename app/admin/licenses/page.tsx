@@ -34,7 +34,8 @@ import { Search, Filter, MoreHorizontal, Download, Eye, Bell, CheckCircle2, Aler
 import Link from "next/link"
 import { format } from "date-fns"
 import { toast } from "sonner"
-import type { LicenseStatus } from "@/lib/types"
+import type { LicenseStatus, License } from "@/lib/types"
+import { sendEmail } from "@/lib/email"
 
 function AdminLicensesContent() {
   const { getLicenses, updateLicense, addAuditEntry } = useDataStore()
@@ -88,14 +89,96 @@ function AdminLicensesContent() {
     toast.success("License force approved")
   }
 
-  const handleSendReminder = (license: typeof licenses[0]) => {
-    addAuditEntry({
-      license_id: license.id,
-      user_id: null,
-      action: "AM_REMINDER",
-      details: { sent_to: license.am_name }
-    })
-    toast.success(`Reminder sent to ${license.am_name}`)
+  const handleSendReminder = async (license: License) => {
+    try {
+      // Get the AM's email from the users list
+      const users = useDataStore.getState().users
+      const amUser = users.find(u => u.id === license.am_id)
+      const amEmail = amUser?.email || `${license.am_name.toLowerCase().replace(/\s+/g, '.')}@antworks.ai`
+
+      // Generate and send the reminder email
+      const reminderHtml = generateAMReminderEmail(license)
+      const result = await sendEmail({
+        to: amEmail,
+        subject: `Action Required: License Request ${license.ticket_id} - ${license.client}`,
+        html: reminderHtml,
+        type: "AM_REMINDER",
+        originalRecipient: amEmail,
+        recipientRole: "AM",
+      })
+
+      if (result.success) {
+        addAuditEntry({
+          license_id: license.id,
+          user_id: null,
+          action: "AM_REMINDER",
+          details: { sent_to: license.am_name, email: amEmail }
+        })
+        toast.success(`Reminder email sent to ${license.am_name} (${amEmail})`)
+      } else {
+        toast.error(`Failed to send reminder: ${result.error}`)
+      }
+    } catch (error) {
+      toast.error("Failed to send reminder email")
+      console.error(error)
+    }
+  }
+
+  const generateAMReminderEmail = (license: License): string => {
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626; border-bottom: 2px solid #ef4444; padding-bottom: 10px;">
+          Action Required: License Request Needs Attention
+        </h2>
+        
+        <p style="color: #334155;">Hello ${license.am_name},</p>
+        
+        <p style="color: #334155;">
+          This is a reminder that the following license request requires your attention:
+        </p>
+        
+        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #fecaca;">
+          <h3 style="color: #dc2626; margin-top: 0;">License Request Details</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; width: 40%;">Ticket ID:</td>
+              <td style="padding: 8px 0; font-weight: bold;">${license.ticket_id}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b;">Client:</td>
+              <td style="padding: 8px 0; font-weight: bold;">${license.client}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b;">Product:</td>
+              <td style="padding: 8px 0;">${license.product}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b;">Environment:</td>
+              <td style="padding: 8px 0;">${license.environment}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b;">Current Status:</td>
+              <td style="padding: 8px 0;"><span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 12px;">${license.status}</span></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b;">Created:</td>
+              <td style="padding: 8px 0;">${format(new Date(license.created_at), "dd MMM yyyy, HH:mm")}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${typeof window !== "undefined" ? window.location.origin : ""}/dashboard/licenses/${license.id}" style="display: inline-block; background: #3b82f6; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            View License Request
+          </a>
+        </div>
+        
+        <p style="color: #64748b; font-size: 12px; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+          This is an automated reminder from LicenseIQ - Antworks License Management System.<br/>
+          Please take action on this request as soon as possible.
+        </p>
+      </div>
+    `
   }
 
   const handleExportCSV = () => {
