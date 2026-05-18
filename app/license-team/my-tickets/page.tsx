@@ -123,7 +123,7 @@ function MyTicketsContent() {
           </div>
 
           {/* Table */}
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -131,8 +131,10 @@ function MyTicketsContent() {
                   <TableHead>Client</TableHead>
                   <TableHead>Product</TableHead>
                   <TableHead>Environment</TableHead>
+                  <TableHead>MAC ID</TableHead>
+                  <TableHead>Pages</TableHead>
+                  <TableHead>Documents</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Issue Date</TableHead>
                   <TableHead>End Date</TableHead>
                   <TableHead className="w-[120px]">Actions</TableHead>
                 </TableRow>
@@ -144,8 +146,10 @@ function MyTicketsContent() {
                     <TableCell className="font-medium">{license.client}</TableCell>
                     <TableCell>{license.product}</TableCell>
                     <TableCell>{license.environment}</TableCell>
+                    <TableCell className="font-mono text-xs">{license.approval_payload.mac_id || "-"}</TableCell>
+                    <TableCell>{license.approval_payload.no_of_pages || "-"}</TableCell>
+                    <TableCell>{license.approval_payload.no_of_documents || "-"}</TableCell>
                     <TableCell>{getStatusBadge(license.status)}</TableCell>
-                    <TableCell>{format(new Date(license.issueDate), "dd-MMM-yyyy")}</TableCell>
                     <TableCell>{format(new Date(license.endDate), "dd-MMM-yyyy")}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
@@ -168,7 +172,7 @@ function MyTicketsContent() {
                 ))}
                 {filteredTickets.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={8} className="h-24 text-center">
+                    <TableCell colSpan={10} className="h-24 text-center">
                       <p className="text-muted-foreground">No tickets found</p>
                     </TableCell>
                   </TableRow>

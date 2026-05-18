@@ -125,9 +125,12 @@ function CEODashboardContent() {
                           <span>{license.environment}</span>
                           <span>by {license.am_name}</span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Ticket: {license.ticket_id} | Created: {format(new Date(license.created_at), "dd-MMM-yyyy")}
-                        </p>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                          <span>Ticket: {license.ticket_id}</span>
+                          <span>MAC: {license.approval_payload.mac_id || "-"}</span>
+                          <span>Pages: {license.approval_payload.no_of_pages || "-"}</span>
+                          <span>Docs: {license.approval_payload.no_of_documents || "-"}</span>
+                        </div>
                       </div>
                     </div>
                     <Button asChild>

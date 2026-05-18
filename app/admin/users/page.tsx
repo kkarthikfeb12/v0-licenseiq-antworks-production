@@ -60,6 +60,9 @@ export default function AdminUsersPage() {
       email: newUser.email,
       role: newUser.role,
       department: newUser.department,
+      disabled: false,
+      mapped_clients: [],
+      last_login: null,
     })
     setNewUser({ name: "", email: "", role: "am", department: "" })
     setIsAddDialogOpen(false)

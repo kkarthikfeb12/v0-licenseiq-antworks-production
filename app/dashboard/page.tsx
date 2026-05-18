@@ -203,9 +203,11 @@ function AMDashboardContent() {
                       <p className="text-sm text-muted-foreground">
                         {license.product} - {license.environment}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(license.created_at), "dd MMM yyyy")}
-                      </p>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                        <span>{format(new Date(license.created_at), "dd MMM yyyy")}</span>
+                        <span>MAC: {license.approval_payload.mac_id || "-"}</span>
+                        <span>Pages: {license.approval_payload.no_of_pages || "-"}</span>
+                      </div>
                     </div>
                     <Button variant="ghost" size="sm" asChild>
                       <Link href={`/dashboard/licenses/${license.id}`}>

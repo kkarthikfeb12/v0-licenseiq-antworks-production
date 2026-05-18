@@ -21,37 +21,40 @@ function AuditLogsContent() {
 
   const getActionLabel = (action: AuditAction) => {
     const labels: Record<AuditAction, string> = {
-      LICENSE_CREATED: "License Created",
-      LICENSE_UPDATED: "License Updated",
-      STATUS_CHANGED: "Status Changed",
+      USER_LOGIN: "User Login",
+      TICKET_CREATED: "Ticket Created",
       CEO_APPROVED: "CEO Approved",
       CEO_REJECTED: "CEO Rejected",
-      LICENSE_CLAIMED: "License Claimed",
+      AM_VERIFIED: "AM Verified",
+      EMAIL_SENT_TO_AM: "Email Sent to AM",
+      EMAIL_SENT_TO_CEO: "Email Sent to CEO",
+      CLAIMED_BY: "Claimed By",
       LICENSE_ACTIVATED: "License Activated",
-      USER_LOGIN: "User Login",
-      USER_LOGOUT: "User Logout",
-      SETTINGS_CHANGED: "Settings Changed"
+      ADMIN_OVERRIDE: "Admin Override",
+      AM_REMINDER: "AM Reminder",
+      EXPIRY_NOTICE: "Expiry Notice",
+      LICENSE_PROVISIONED: "License Provisioned"
     }
     return labels[action] || action
   }
 
   const getActionColor = (action: AuditAction) => {
-    if (action.includes("CREATED") || action.includes("ACTIVATED") || action.includes("APPROVED")) {
+    if (action.includes("ACTIVATED") || action.includes("APPROVED") || action.includes("CREATED")) {
       return "bg-green-100 text-green-800"
     }
     if (action.includes("REJECTED")) {
       return "bg-red-100 text-red-800"
     }
-    if (action.includes("LOGIN") || action.includes("LOGOUT")) {
+    if (action.includes("LOGIN") || action.includes("EMAIL")) {
       return "bg-blue-100 text-blue-800"
     }
     return "bg-gray-100 text-gray-800"
   }
 
   const getActionIcon = (action: AuditAction) => {
-    if (action.includes("LICENSE")) return <FileText className="h-4 w-4" />
-    if (action.includes("USER") || action.includes("CEO")) return <User className="h-4 w-4" />
-    if (action.includes("SETTINGS")) return <Settings className="h-4 w-4" />
+    if (action.includes("LICENSE") || action.includes("TICKET")) return <FileText className="h-4 w-4" />
+    if (action.includes("USER") || action.includes("CEO") || action.includes("AM") || action.includes("CLAIMED")) return <User className="h-4 w-4" />
+    if (action.includes("EMAIL")) return <Activity className="h-4 w-4" />
     return <Activity className="h-4 w-4" />
   }
 
