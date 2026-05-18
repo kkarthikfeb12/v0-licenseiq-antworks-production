@@ -237,7 +237,7 @@ export const useStore = () => {
     addUser: (user: Omit<User, "id" | "createdAt">) => {
       return data.addUser({
         ...user,
-        password: "password123",
+        password: user.password || "password123",
         createdAt: new Date().toISOString()
       } as Omit<User, "id">)
     },
