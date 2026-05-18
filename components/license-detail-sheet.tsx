@@ -56,8 +56,8 @@ export function LicenseDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-2xl flex flex-col h-full">
-        <SheetHeader className="pb-4 flex-shrink-0">
+      <SheetContent className="w-full sm:max-w-2xl p-0 flex flex-col h-full max-h-screen overflow-hidden">
+        <SheetHeader className="px-6 pt-6 pb-4 flex-shrink-0 border-b">
           <div className="flex items-center gap-2">
             <SheetTitle>{license.ticket_id}</SheetTitle>
             {license.status === "Active" ? (
@@ -73,8 +73,8 @@ export function LicenseDetailSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="flex-1 pr-4 -mr-4">
-          <div className="space-y-6 pb-4">
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="px-6 py-4 space-y-6">
             {/* Status & Assignment */}
             <div className="rounded-lg border p-4 bg-muted/50">
               <div className="grid grid-cols-2 gap-4">
@@ -353,7 +353,7 @@ export function LicenseDetailSheet({
         </ScrollArea>
 
         {/* Actions - Fixed at bottom */}
-        <SheetFooter className="flex-shrink-0 pt-4 border-t mt-auto">
+        <SheetFooter className="flex-shrink-0 px-6 py-4 border-t bg-background">
           <div className="flex gap-3 w-full">
             {canClaim && (
               <Button onClick={() => onClaim(license)} className="flex-1" size="lg">
