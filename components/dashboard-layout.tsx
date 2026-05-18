@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
@@ -31,14 +31,16 @@ export function DashboardLayout({
             <Breadcrumb>
               <BreadcrumbList>
                 {breadcrumbs.map((crumb, index) => (
-                  <BreadcrumbItem key={index}>
-                    {index > 0 && <BreadcrumbSeparator />}
-                    {crumb.href ? (
-                      <BreadcrumbLink href={crumb.href}>{crumb.label}</BreadcrumbLink>
-                    ) : (
-                      <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                    )}
-                  </BreadcrumbItem>
+                  <React.Fragment key={index}>
+                    {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
+                    <BreadcrumbItem>
+                      {crumb.href ? (
+                        <BreadcrumbLink href={crumb.href}>{crumb.label}</BreadcrumbLink>
+                      ) : (
+                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                      )}
+                    </BreadcrumbItem>
+                  </React.Fragment>
                 ))}
               </BreadcrumbList>
             </Breadcrumb>

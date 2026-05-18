@@ -265,6 +265,58 @@ function CEOApprovalContent({ licenseId }: { licenseId: string }) {
           </CardContent>
         </Card>
 
+        {/* Hardware Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Server className="h-5 w-5" />
+              Hardware Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <dt className="text-sm text-muted-foreground">MAC ID</dt>
+                <dd className="font-medium font-mono">{payload.mac_id || "-"}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted-foreground">Motherboard Serial No.</dt>
+                <dd className="font-medium font-mono">{payload.motherboard_serial_no || "-"}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted-foreground">Processor ID</dt>
+                <dd className="font-medium font-mono">{payload.processor_id || "-"}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted-foreground">C Drive Serial No.</dt>
+                <dd className="font-medium font-mono">{payload.c_drive_serial_no || "-"}</dd>
+              </div>
+            </dl>
+          </CardContent>
+        </Card>
+
+        {/* Document Metrics */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Document Metrics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <dt className="text-sm text-muted-foreground">No. of Pages</dt>
+                <dd className="font-medium">{payload.no_of_pages || "-"}</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-muted-foreground">No. of Documents</dt>
+                <dd className="font-medium">{payload.no_of_documents || "-"}</dd>
+              </div>
+            </dl>
+          </CardContent>
+        </Card>
+
         {/* Validity & Contracts */}
         <Card>
           <CardHeader>

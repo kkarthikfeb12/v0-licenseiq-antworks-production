@@ -190,74 +190,58 @@ export function LicenseDetailSheet({
             </div>
 
             {/* Hardware Details */}
-            {(payload.mac_id || payload.motherboard_serial_no || payload.processor_id || payload.c_drive_serial_no) && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
-                    <Cpu className="h-4 w-4" />
-                    Hardware Details
-                  </h3>
-                  <dl className="grid gap-3">
-                    <div className="grid grid-cols-2 gap-2">
-                      {payload.mac_id && (
-                        <div>
-                          <dt className="text-xs text-muted-foreground">MAC ID</dt>
-                          <dd className="font-medium text-sm font-mono">{payload.mac_id}</dd>
-                        </div>
-                      )}
-                      {payload.motherboard_serial_no && (
-                        <div>
-                          <dt className="text-xs text-muted-foreground">Motherboard S/N</dt>
-                          <dd className="font-medium text-sm font-mono">{payload.motherboard_serial_no}</dd>
-                        </div>
-                      )}
+            <>
+              <Separator />
+              <div>
+                <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                  <Cpu className="h-4 w-4" />
+                  Hardware Details
+                </h3>
+                <dl className="grid gap-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <dt className="text-xs text-muted-foreground">MAC ID</dt>
+                      <dd className="font-medium text-sm font-mono">{payload.mac_id || "-"}</dd>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {payload.processor_id && (
-                        <div>
-                          <dt className="text-xs text-muted-foreground">Processor ID</dt>
-                          <dd className="font-medium text-sm font-mono">{payload.processor_id}</dd>
-                        </div>
-                      )}
-                      {payload.c_drive_serial_no && (
-                        <div>
-                          <dt className="text-xs text-muted-foreground">C Drive S/N</dt>
-                          <dd className="font-medium text-sm font-mono">{payload.c_drive_serial_no}</dd>
-                        </div>
-                      )}
+                    <div>
+                      <dt className="text-xs text-muted-foreground">Motherboard S/N</dt>
+                      <dd className="font-medium text-sm font-mono">{payload.motherboard_serial_no || "-"}</dd>
                     </div>
-                  </dl>
-                </div>
-              </>
-            )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <dt className="text-xs text-muted-foreground">Processor ID</dt>
+                      <dd className="font-medium text-sm font-mono">{payload.processor_id || "-"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-muted-foreground">C Drive S/N</dt>
+                      <dd className="font-medium text-sm font-mono">{payload.c_drive_serial_no || "-"}</dd>
+                    </div>
+                  </div>
+                </dl>
+              </div>
+            </>
 
             {/* Document Metrics */}
-            {(payload.no_of_pages || payload.no_of_documents) && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
-                    <FileStack className="h-4 w-4" />
-                    Document Metrics
-                  </h3>
-                  <dl className="grid grid-cols-2 gap-2">
-                    {payload.no_of_pages && (
-                      <div>
-                        <dt className="text-xs text-muted-foreground">No. of Pages</dt>
-                        <dd className="font-medium text-sm">{payload.no_of_pages}</dd>
-                      </div>
-                    )}
-                    {payload.no_of_documents && (
-                      <div>
-                        <dt className="text-xs text-muted-foreground">No. of Documents</dt>
-                        <dd className="font-medium text-sm">{payload.no_of_documents}</dd>
-                      </div>
-                    )}
-                  </dl>
-                </div>
-              </>
-            )}
+            <>
+              <Separator />
+              <div>
+                <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                  <FileStack className="h-4 w-4" />
+                  Document Metrics
+                </h3>
+                <dl className="grid grid-cols-2 gap-2">
+                  <div>
+                    <dt className="text-xs text-muted-foreground">No. of Pages</dt>
+                    <dd className="font-medium text-sm">{payload.no_of_pages || "-"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted-foreground">No. of Documents</dt>
+                    <dd className="font-medium text-sm">{payload.no_of_documents || "-"}</dd>
+                  </div>
+                </dl>
+              </div>
+            </>
 
             <Separator />
 
