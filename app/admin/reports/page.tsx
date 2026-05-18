@@ -10,14 +10,12 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
-  BarChart3, 
   Download, 
   FileText, 
   TrendingUp,
   Clock,
   CheckCircle,
   XCircle,
-  Users,
   Building
 } from "lucide-react"
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Tooltip, Legend } from "recharts"
@@ -29,33 +27,33 @@ export default function AdminReportsPage() {
 
   // Calculate metrics
   const totalLicenses = licenses.length
-  const pendingLicenses = licenses.filter(l => l.status === "pending_ceo").length
-  const approvedLicenses = licenses.filter(l => l.status === "ceo_approved" || l.status === "license_generated").length
-  const rejectedLicenses = licenses.filter(l => l.status === "ceo_rejected").length
+  const pendingLicenses = licenses.filter(l => l.status === "Pending CEO").length
+  const activeLicenses = licenses.filter(l => l.status === "Active" || l.status === "Pending License Team").length
+  const expiredLicenses = licenses.filter(l => l.status === "Expired").length
   
   const avgProcessingTime = licenses.length > 0 
     ? Math.round(licenses.reduce((acc, l) => {
-        const created = new Date(l.createdAt).getTime()
-        const updated = new Date(l.updatedAt).getTime()
+        const created = new Date(l.created_at).getTime()
+        const updated = new Date(l.updated_at).getTime()
         return acc + (updated - created)
       }, 0) / licenses.length / (1000 * 60 * 60 * 24))
     : 0
 
   // Status distribution for pie chart
   const statusData = [
-    { name: "Draft", value: licenses.filter(l => l.status === "draft").length, color: "#94a3b8" },
-    { name: "Pending CEO", value: licenses.filter(l => l.status === "pending_ceo").length, color: "#f59e0b" },
-    { name: "CEO Approved", value: licenses.filter(l => l.status === "ceo_approved").length, color: "#22c55e" },
-    { name: "CEO Rejected", value: licenses.filter(l => l.status === "ceo_rejected").length, color: "#ef4444" },
-    { name: "License Generated", value: licenses.filter(l => l.status === "license_generated").length, color: "#3b82f6" },
+    { name: "Draft", value: licenses.filter(l => l.status === "Draft").length, color: "#94a3b8" },
+    { name: "Pending CEO", value: licenses.filter(l => l.status === "Pending CEO").length, color: "#f59e0b" },
+    { name: "Pending License Team", value: licenses.filter(l => l.status === "Pending License Team").length, color: "#3b82f6" },
+    { name: "Active", value: licenses.filter(l => l.status === "Active").length, color: "#22c55e" },
+    { name: "Expired", value: licenses.filter(l => l.status === "Expired").length, color: "#ef4444" },
   ].filter(d => d.value > 0)
 
-  // License type distribution
+  // License type distribution based on approval_payload.license_type
   const typeData = [
-    { name: "New", count: licenses.filter(l => l.licenseType === "new").length },
-    { name: "Renewal", count: licenses.filter(l => l.licenseType === "renewal").length },
-    { name: "Extension", count: licenses.filter(l => l.licenseType === "extension").length },
-    { name: "POC", count: licenses.filter(l => l.licenseType === "poc").length },
+    { name: "Period", count: licenses.filter(l => l.approval_payload.license_type === "Period").length },
+    { name: "Perpetual", count: licenses.filter(l => l.approval_payload.license_type === "Perpetual").length },
+    { name: "Trial", count: licenses.filter(l => l.approval_payload.license_type === "Trial").length },
+    { name: "POC", count: licenses.filter(l => l.approval_payload.license_type === "POC").length },
   ]
 
   // Monthly trend data (simulated)
@@ -73,18 +71,18 @@ export default function AdminReportsPage() {
     .filter(u => u.role === "am")
     .map(am => ({
       name: am.name,
-      requests: licenses.filter(l => l.createdBy === am.id).length,
-      approved: licenses.filter(l => l.createdBy === am.id && (l.status === "ceo_approved" || l.status === "license_generated")).length,
+      requests: licenses.filter(l => l.am_id === am.id).length,
+      approved: licenses.filter(l => l.am_id === am.id && (l.status === "Active" || l.status === "Pending License Team")).length,
     }))
     .sort((a, b) => b.requests - a.requests)
 
   // Customer distribution
   const customerData = licenses.reduce((acc, l) => {
-    const existing = acc.find(c => c.name === l.customerName)
+    const existing = acc.find(c => c.name === l.client)
     if (existing) {
       existing.count++
     } else {
-      acc.push({ name: l.customerName, count: 1 })
+      acc.push({ name: l.client, count: 1 })
     }
     return acc
   }, [] as { name: string; count: number }[])
@@ -92,14 +90,16 @@ export default function AdminReportsPage() {
   .slice(0, 5)
 
   const handleExportCSV = () => {
-    const headers = ["ID", "Customer", "Type", "Status", "Created By", "Created At"]
+    const headers = ["ID", "Ticket ID", "Customer", "Product", "Environment", "Status", "AM", "Created At"]
     const rows = licenses.map(l => [
       l.id,
-      l.customerName,
-      l.licenseType,
+      l.ticket_id,
+      l.client,
+      l.product,
+      l.environment,
       l.status,
-      users.find(u => u.id === l.createdBy)?.name || "Unknown",
-      new Date(l.createdAt).toLocaleDateString()
+      l.am_name,
+      new Date(l.created_at).toLocaleDateString()
     ])
     
     const csv = [headers, ...rows].map(row => row.join(",")).join("\n")
@@ -162,25 +162,25 @@ export default function AdminReportsPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Approved</CardTitle>
+              <CardTitle className="text-sm font-medium">Active</CardTitle>
               <CheckCircle className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{approvedLicenses}</div>
+              <div className="text-2xl font-bold">{activeLicenses}</div>
               <p className="text-xs text-muted-foreground">
-                {totalLicenses > 0 ? Math.round((approvedLicenses / totalLicenses) * 100) : 0}% approval rate
+                {totalLicenses > 0 ? Math.round((activeLicenses / totalLicenses) * 100) : 0}% active rate
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Rejected</CardTitle>
+              <CardTitle className="text-sm font-medium">Expired</CardTitle>
               <XCircle className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{rejectedLicenses}</div>
+              <div className="text-2xl font-bold">{expiredLicenses}</div>
               <p className="text-xs text-muted-foreground">
-                {totalLicenses > 0 ? Math.round((rejectedLicenses / totalLicenses) * 100) : 0}% rejection rate
+                {totalLicenses > 0 ? Math.round((expiredLicenses / totalLicenses) * 100) : 0}% expired rate
               </p>
             </CardContent>
           </Card>
@@ -191,7 +191,7 @@ export default function AdminReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{avgProcessingTime} days</div>
-              <p className="text-xs text-muted-foreground">Request to approval</p>
+              <p className="text-xs text-muted-foreground">Request to activation</p>
             </CardContent>
           </Card>
         </div>
@@ -312,7 +312,7 @@ export default function AdminReportsPage() {
                     <TableRow>
                       <TableHead>Account Manager</TableHead>
                       <TableHead className="text-center">Total Requests</TableHead>
-                      <TableHead className="text-center">Approved</TableHead>
+                      <TableHead className="text-center">Approved/Active</TableHead>
                       <TableHead className="text-center">Success Rate</TableHead>
                     </TableRow>
                   </TableHeader>

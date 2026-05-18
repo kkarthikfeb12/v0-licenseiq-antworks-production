@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Settings, Mail, Bell, Shield, Database, Save, RefreshCw } from "lucide-react"
+import { Mail, Bell, Shield, Database, Save, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 
 function SettingsContent() {
@@ -19,7 +19,7 @@ function SettingsContent() {
   const { currentUser } = useAuthStore()
   
   const [emailSettings, setEmailSettings] = useState({
-    ceoEmail: systemConfig.ceo_email,
+    productSupportDL: systemConfig.product_support_dl,
     smtpHost: "smtp.antworks.com",
     smtpPort: "587",
     smtpUser: "notifications@antworks.com"
@@ -40,11 +40,11 @@ function SettingsContent() {
   })
 
   const handleSaveEmailSettings = () => {
-    updateSystemConfig({ ceo_email: emailSettings.ceoEmail })
+    updateSystemConfig({ product_support_dl: emailSettings.productSupportDL })
     addAuditEntry({
       license_id: null,
       user_id: currentUser?.id || null,
-      action: "SETTINGS_CHANGED",
+      action: "ADMIN_OVERRIDE",
       details: { section: "email", changes: emailSettings }
     })
     toast.success("Email settings saved successfully")
@@ -54,7 +54,7 @@ function SettingsContent() {
     addAuditEntry({
       license_id: null,
       user_id: currentUser?.id || null,
-      action: "SETTINGS_CHANGED",
+      action: "ADMIN_OVERRIDE",
       details: { section: "notifications", changes: notificationSettings }
     })
     toast.success("Notification settings saved successfully")
@@ -64,7 +64,7 @@ function SettingsContent() {
     addAuditEntry({
       license_id: null,
       user_id: currentUser?.id || null,
-      action: "SETTINGS_CHANGED",
+      action: "ADMIN_OVERRIDE",
       details: { section: "security", changes: securitySettings }
     })
     toast.success("Security settings saved successfully")
@@ -116,16 +116,16 @@ function SettingsContent() {
               <CardContent className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="ceoEmail">CEO Email</Label>
+                    <Label htmlFor="productSupportDL">Product Support DL</Label>
                     <Input
-                      id="ceoEmail"
+                      id="productSupportDL"
                       type="email"
-                      value={emailSettings.ceoEmail}
-                      onChange={(e) => setEmailSettings({ ...emailSettings, ceoEmail: e.target.value })}
-                      placeholder="ceo@company.com"
+                      value={emailSettings.productSupportDL}
+                      onChange={(e) => setEmailSettings({ ...emailSettings, productSupportDL: e.target.value })}
+                      placeholder="support@company.com"
                     />
                     <p className="text-sm text-muted-foreground">
-                      Email address for CEO approval requests
+                      Distribution list for product support notifications
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -340,12 +340,12 @@ function SettingsContent() {
                     <p className="text-2xl font-bold text-primary">Development</p>
                   </div>
                   <div className="p-4 border rounded-lg">
-                    <h4 className="font-medium mb-2">Magic Link Expiry</h4>
-                    <p className="text-2xl font-bold text-primary">{systemConfig.magic_link_expiry_hours}h</p>
+                    <h4 className="font-medium mb-2">Products Configured</h4>
+                    <p className="text-2xl font-bold text-primary">{systemConfig.products.length}</p>
                   </div>
                   <div className="p-4 border rounded-lg">
-                    <h4 className="font-medium mb-2">Default License Validity</h4>
-                    <p className="text-2xl font-bold text-primary">{systemConfig.default_license_validity_days} days</p>
+                    <h4 className="font-medium mb-2">Environments Configured</h4>
+                    <p className="text-2xl font-bold text-primary">{systemConfig.environments.length}</p>
                   </div>
                 </div>
                 <Separator />
